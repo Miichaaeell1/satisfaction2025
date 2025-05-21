@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionnaire de Satisfaction - Formation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f6f6f6;
+        }
+        
+        .oblong {
+            border-radius: 50px;
+        }
+        
+        .btn-primary {
+            background-color: #50b8ff;
+            color: white;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #036093;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .rating-item input[type="radio"] {
+            display: none;
+        }
+        
+        .rating-item label {
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            border: 2px solid #e0e0e0;
+            color: #666;
+            transition: all 0.2s ease;
+        }
+        
+        .rating-item input[type="radio"]:checked + label {
+            background-color: #face37;
+            border-color: #face37;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #50b8ff;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .section {
+            opacity: 0;
+            display: none;
+            transition: opacity 0.5s ease;
+        }
+        
+        .section.active {
+            opacity: 1;
+            display: block;
+        }
+        
+        .form-control {
+            border-radius: 50px;
+            border: 2px solid #e0e0e0;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #50b8ff;
+            box-shadow: 0 0 0 3px rgba(80, 184, 255, 0.25);
+            outline: none;
+        }
+        
+        .header-wave {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            z-index: -1;
+        }
+        
+        .header-wave svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 150px;
+        }
+        
+        .header-wave .shape-fill {
+            fill: #50b8ff;
+        }
+                
+        .rating-scale {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        
+        .rating-scale-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60px;
+        }
+        
+        .rating-scale-item input[type="radio"] {
+            display: none;
+        }
+        
+        .rating-scale-item label {
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            border: 2px solid #e0e0e0;
+            color: #666;
+            transition: all 0.2s ease;
+            margin-bottom: 5px;
+        }
+        
+        .rating-scale-item input[type="radio"]:checked + label {
+            background-color: #face37;
+            border-color: #face37;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .rating-scale-item .label-text {
+            font-size: 10px;
+            text-align: center;
+            color: #666;
+        }
+        
+        .question-container {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .question-container:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-wave">
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+        </svg>
+    </div>
+
+    <div class="container mx-auto px-4 py-12 max-w-3xl relative">
+        <div class="bg-white oblong shadow-lg p-8 mb-8">
+            <h1 class="text-3xl font-bold text-center mb-2 text-[#036093]">Questionnaire de Satisfaction</h1>
+            <p class="text-center text-gray-600 mb-6">Évaluation de la formation</p>
+            
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar" style="width: 20%;"></div>
+            </div>
+            
+            <form id="satisfaction-form" action="https://formsubmit.co/michael.boulon.com" method="POST">
+                <input type="hidden" name="_replyto" value="michael.boulon@anthropi.fr">
+                
+                <div class="section active" id="section-1">
+                    <h2 class="text-xl font-semibold mb-4 text-[#036093]">Informations personnelles</h2>
+                    
+                    <div class="mb-4">
+                        <label for="fonction" class="block text-gray-700 mb-2">Fonction du participant</label>
+                        <select id="fonction" name="fonction" class="form-control w-full" required>
+                            <option value="">Sélectionnez votre fonction</option>
+                            <option value="assistant_regulation_medicale">Assistant de régulation médicale</option>
+                            <option value="etudiant_arm">Étudiant ARM</option>
+                            <option value="operateur_cta_codis">Opérateur CTA-CODIS</option>
+                            <option value="medecin_regulateur">Médecin régulateur</option>
+                            <option value="chef_de_salle">Chef de salle</option>
+                            <option value="regulateur_144">Régulateur 144</option>
+                            <option value="chef_operateur">Chef opérateur</option>
+                            <option value="medecin_tmc">Médecin TMC</option>
+                            <option value="secretaire_medicale">Secrétaire médicale</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="prenom" class="block text-gray-700 mb-2">Prénom</label>
+                        <input type="text" id="prenom" name="prenom" class="form-control w-full" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="nom" class="block text-gray-700 mb-2">Nom</label>
+                        <input type="text" id="nom" name="nom" class="form-control w-full" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Sexe</label>
+                        <div class="flex space-x-4">
+                            <div class="flex items-center">
+                                <input type="radio" id="sexe-homme" name="sexe" value="homme" class="mr-2" required>
+                                <label for="sexe-homme">Homme</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" id="sexe-femme" name="sexe" value="femme" class="mr-2">
+                                <label for="sexe-femme">Femme</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="formateur" class="block text-gray-700 mb-2">Nom du formateur</label>
+                        <input type="text" id="formateur" name="formateur" class="form-control w-full" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="lieu" class="block text-gray-700 mb-2">Lieu de la formation</label>
+                        <input type="text" id="lieu" name="lieu" class="form-control w-full" required>
+                    </div>
+                    
+                    <div class="flex justify-end mt-6">
+                        <button type="button" class="btn-primary px-6 py-2 font-medium" onclick="nextSection(1, 2)">Suivant</button>
+                    </div>
+                </div>
+                
+                <div class="section" id="section-2">
+                    <h2 class="text-xl font-semibold mb-4 text-[#036093]">Évaluation de la formation</h2>
+                    <p class="text-sm text-gray-600 mb-6">Veuillez noter de 1 à 4 : 1 = Pas du tout d'accord, 4 = Tout à fait d'accord</p>
+                    
+                    <div class="question-container">
+                        <label class="block text-gray-700 mb-2">La salle était adaptée à la formation</label>
+                        <div class="rating-scale">
+                            <div class="rating-scale-item">
+                                <input type="radio" name="salle_adaptee" id="salle_adaptee-1" value="1" required>
+                                <label for="salle_adaptee-1">1</label>
+                                <span class="label-text">Pas du tout d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="salle_adaptee" id="salle_adaptee-2" value="2">
+                                <label for="salle_adaptee-2">2</label>
+                                <span class="label-text">Plutôt pas d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="salle_adaptee" id="salle_adaptee-3" value="3">
+                                <label for="salle_adaptee-3">3</label>
+                                <span class="label-text">Plutôt d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="salle_adaptee" id="salle_adaptee-4" value="4">
+                                <label for="salle_adaptee-4">4</label>
+                                <span class="label-text">Tout à fait d'accord</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-container">
+                        <label class="block text-gray-700 mb-2">Le matériel fourni pour la formation était satisfaisant</label>
+                        <div class="rating-scale">
+                            <div class="rating-scale-item">
+                                <input type="radio" name="materiel_satisfaisant" id="materiel_satisfaisant-1" value="1" required>
+                                <label for="materiel_satisfaisant-1">1</label>
+                                <span class="label-text">Pas du tout d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="materiel_satisfaisant" id="materiel_satisfaisant-2" value="2">
+                                <label for="materiel_satisfaisant-2">2</label>
+                                <span class="label-text">Plutôt pas d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="materiel_satisfaisant" id="materiel_satisfaisant-3" value="3">
+                                <label for="materiel_satisfaisant-3">3</label>
+                                <span class="label-text">Plutôt d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="materiel_satisfaisant" id="materiel_satisfaisant-4" value="4">
+                                <label for="materiel_satisfaisant-4">4</label>
+                                <span class="label-text">Tout à fait d'accord</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-container">
+                        <label class="block text-gray-700 mb-2">Le formateur a communiqué les objectifs</label>
+                        <div class="rating-scale">
+                            <div class="rating-scale-item">
+                                <input type="radio" name="objectifs_communiques" id="objectifs_communiques-1" value="1" required>
+                                <label for="objectifs_communiques-1">1</label>
+                                <span class="label-text">Pas du tout d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="objectifs_communiques" id="objectifs_communiques-2" value="2">
+                                <label for="objectifs_communiques-2">2</label>
+                                <span class="label-text">Plutôt pas d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="objectifs_communiques" id="objectifs_communiques-3" value="3">
+                                <label for="objectifs_communiques-3">3</label>
+                                <span class="label-text">Plutôt d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="objectifs_communiques" id="objectifs_communiques-4" value="4">
+                                <label for="objectifs_communiques-4">4</label>
+                                <span class="label-text">Tout à fait d'accord</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-container">
+                        <label class="block text-gray-700 mb-2">Le formateur a pris en compte l'entièreté du groupe</label>
+                        <div class="rating-scale">
+                            <div class="rating-scale-item">
+                                <input type="radio" name="prise_en_compte_groupe" id="prise_en_compte_groupe-1" value="1" required>
+                                <label for="prise_en_compte_groupe-1">1</label>
+                                <span class="label-text">Pas du tout d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="prise_en_compte_groupe" id="prise_en_compte_groupe-2" value="2">
+                                <label for="prise_en_compte_groupe-2">2</label>
+                                <span class="label-text">Plutôt pas d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="prise_en_compte_groupe" id="prise_en_compte_groupe-3" value="3">
+                                <label for="prise_en_compte_groupe-3">3</label>
+                                <span class="label-text">Plutôt d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="prise_en_compte_groupe" id="prise_en_compte_groupe-4" value="4">
+                                <label for="prise_en_compte_groupe-4">4</label>
+                                <span class="label-text">Tout à fait d'accord</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-container">
+                        <label class="block text-gray-700 mb-2">Le rythme et le contenu de la formation étaient adaptés aux objectifs</label>
+                        <div class="rating-scale">
+                            <div class="rating-scale-item">
+                                <input type="radio" name="rythme_contenu_adaptes" id="rythme_contenu_adaptes-1" value="1" required>
+                                <label for="rythme_contenu_adaptes-1">1</label>
+                                <span class="label-text">Pas du tout d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="rythme_contenu_adaptes" id="rythme_contenu_adaptes-2" value="2">
+                                <label for="rythme_contenu_adaptes-2">2</label>
+                                <span class="label-text">Plutôt pas d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="rythme_contenu_adaptes" id="rythme_contenu_adaptes-3" value="3">
+                                <label for="rythme_contenu_adaptes-3">3</label>
+                                <span class="label-text">Plutôt d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="rythme_contenu_adaptes" id="rythme_contenu_adaptes-4" value="4">
+                                <label for="rythme_contenu_adaptes-4">4</label>
+                                <span class="label-text">Tout à fait d'accord</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-6">
+                        <button type="button" class="px-6 py-2 bg-gray-200 text-gray-700 oblong font-medium" onclick="prevSection(2, 1)">Précédent</button>
+                        <button type="button" class="btn-primary px-6 py-2 font-medium" onclick="nextSection(2, 3)">Suivant</button>
+                    </div>
+                </div>
+                
+                <div class="section" id="section-3">
+                    <h2 class="text-xl font-semibold mb-4 text-[#036093]">Évaluation de la formation (suite)</h2>
+                    <p class="text-sm text-gray-600 mb-6">Veuillez noter de 1 à 4 : 1 = Pas du tout d'accord, 4 = Tout à fait d'accord</p>
+                    
+                    <div class="question-container">
+                        <label class="block text-gray-700 mb-2">Le déroulé de la formation a été donné et clair</label>
+                        <div class="rating-scale">
+                            <div class="rating-scale-item">
+                                <input type="radio" name="deroule_clair" id="deroule_clair-1" value="1" required>
+                                <label for="deroule_clair-1">1</label>
+                                <span class="label-text">Pas du tout d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="deroule_clair" id="deroule_clair-2" value="2">
+                                <label for="deroule_clair-2">2</label>
+                                <span class="label-text">Plutôt pas d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="deroule_clair" id="deroule_clair-3" value="3">
+                                <label for="deroule_clair-3">3</label>
+                                <span class="label-text">Plutôt d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="deroule_clair" id="deroule_clair-4" value="4">
+                                <label for="deroule_clair-4">4</label>
+                                <span class="label-text">Tout à fait d'accord</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-container">
+                        <label class="block text-gray-700 mb-2">J'ai apprécié l'organisation et le déroulement de la formation</label>
+                        <div class="rating-scale">
+                            <div class="rating-scale-item">
+                                <input type="radio" name="appreciation_organisation" id="appreciation_organisation-1" value="1" required>
+                                <label for="appreciation_organisation-1">1</label>
+                                <span class="label-text">Pas du tout d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="appreciation_organisation" id="appreciation_organisation-2" value="2">
+                                <label for="appreciation_organisation-2">2</label>
+                                <span class="label-text">Plutôt pas d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="appreciation_organisation" id="appreciation_organisation-3" value="3">
+                                <label for="appreciation_organisation-3">3</label>
+                                <span class="label-text">Plutôt d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="appreciation_organisation" id="appreciation_organisation-4" value="4">
+                                <label for="appreciation_organisation-4">4</label>
+                                <span class="label-text">Tout à fait d'accord</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-container">
+                        <label class="block text-gray-700 mb-2">J'ai apprécié les supports de formations</label>
+                        <div class="rating-scale">
+                            <div class="rating-scale-item">
+                                <input type="radio" name="appreciation_supports" id="appreciation_supports-1" value="1" required>
+                                <label for="appreciation_supports-1">1</label>
+                                <span class="label-text">Pas du tout d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="appreciation_supports" id="appreciation_supports-2" value="2">
+                                <label for="appreciation_supports-2">2</label>
+                                <span class="label-text">Plutôt pas d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="appreciation_supports" id="appreciation_supports-3" value="3">
+                                <label for="appreciation_supports-3">3</label>
+                                <span class="label-text">Plutôt d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="appreciation_supports" id="appreciation_supports-4" value="4">
+                                <label for="appreciation_supports-4">4</label>
+                                <span class="label-text">Tout à fait d'accord</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-container">
+                        <label class="block text-gray-700 mb-2">Le formateur était disponible pour des éventuelles questions</label>
+                        <div class="rating-scale">
+                            <div class="rating-scale-item">
+                                <input type="radio" name="disponibilite_formateur" id="disponibilite_formateur-1" value="1" required>
+                                <label for="disponibilite_formateur-1">1</label>
+                                <span class="label-text">Pas du tout d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="disponibilite_formateur" id="disponibilite_formateur-2" value="2">
+                                <label for="disponibilite_formateur-2">2</label>
+                                <span class="label-text">Plutôt pas d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="disponibilite_formateur" id="disponibilite_formateur-3" value="3">
+                                <label for="disponibilite_formateur-3">3</label>
+                                <span class="label-text">Plutôt d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="disponibilite_formateur" id="disponibilite_formateur-4" value="4">
+                                <label for="disponibilite_formateur-4">4</label>
+                                <span class="label-text">Tout à fait d'accord</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-container">
+                        <label class="block text-gray-700 mb-2">Il y avait une bonne ambiance avec les participants</label>
+                        <div class="rating-scale">
+                            <div class="rating-scale-item">
+                                <input type="radio" name="bonne_ambiance" id="bonne_ambiance-1" value="1" required>
+                                <label for="bonne_ambiance-1">1</label>
+                                <span class="label-text">Pas du tout d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="bonne_ambiance" id="bonne_ambiance-2" value="2">
+                                <label for="bonne_ambiance-2">2</label>
+                                <span class="label-text">Plutôt pas d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="bonne_ambiance" id="bonne_ambiance-3" value="3">
+                                <label for="bonne_ambiance-3">3</label>
+                                <span class="label-text">Plutôt d'accord</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="bonne_ambiance" id="bonne_ambiance-4" value="4">
+                                <label for="bonne_ambiance-4">4</label>
+                                <span class="label-text">Tout à fait d'accord</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-6">
+                        <button type="button" class="px-6 py-2 bg-gray-200 text-gray-700 oblong font-medium" onclick="prevSection(3, 2)">Précédent</button>
+                        <button type="button" class="btn-primary px-6 py-2 font-medium" onclick="nextSection(3, 4)">Suivant</button>
+                    </div>
+                </div>
+                
+                <div class="section" id="section-4">
+                    <h2 class="text-xl font-semibold mb-4 text-[#036093]">Votre expérience de formation</h2>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Vous avez eu connaissance de cette formation par :</label>
+                        <select id="connaissance_formation" name="connaissance_formation" class="form-control w-full" required>
+                            <option value="">Sélectionnez une option</option>
+                            <option value="service_formation">Le service formation</option>
+                            <option value="hierarchie">Ma hiérarchie</option>
+                            <option value="collegues">Des collègues</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Souhaiteriez-vous suivre de nouveau cette formation ?</label>
+                        <div class="rating-scale">
+                            <div class="rating-scale-item">
+                                <input type="radio" name="suivre_nouveau" id="suivre_nouveau-1" value="1" required>
+                                <label for="suivre_nouveau-1">1</label>
+                                <span class="label-text">Pas du tout</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="suivre_nouveau" id="suivre_nouveau-2" value="2">
+                                <label for="suivre_nouveau-2">2</label>
+                                <span class="label-text">Plutôt non</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="suivre_nouveau" id="suivre_nouveau-3" value="3">
+                                <label for="suivre_nouveau-3">3</label>
+                                <span class="label-text">Plutôt oui</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="suivre_nouveau" id="suivre_nouveau-4" value="4">
+                                <label for="suivre_nouveau-4">4</label>
+                                <span class="label-text">Tout à fait</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Votre suivi à cette formation :</label>
+                        <select id="suivi_formation" name="suivi_formation" class="form-control w-full" required>
+                            <option value="">Sélectionnez une option</option>
+                            <option value="initiative">Relève de mon initiative</option>
+                            <option value="hierarchie">Est dû à ma hiérarchie</option>
+                            <option value="les_deux">Les deux</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Qu'attendiez-vous de cette formation ?</label>
+                        <select id="attentes_formation" name="attentes_formation" class="form-control w-full" required>
+                            <option value="">Sélectionnez une option</option>
+                            <option value="savoirs_personnels">Des savoirs personnels utilisables</option>
+                            <option value="apports_carriere">Des apports utiles à ma carrière</option>
+                            <option value="connaissances_generales">Des connaissances générales</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">La formation a-t-elle répondu à vos attentes ?</label>
+                        <div class="rating-scale">
+                            <div class="rating-scale-item">
+                                <input type="radio" name="reponse_attentes" id="reponse_attentes-1" value="1" required>
+                                <label for="reponse_attentes-1">1</label>
+                                <span class="label-text">Pas du tout</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="reponse_attentes" id="reponse_attentes-2" value="2">
+                                <label for="reponse_attentes-2">2</label>
+                                <span class="label-text">Plutôt non</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="reponse_attentes" id="reponse_attentes-3" value="3">
+                                <label for="reponse_attentes-3">3</label>
+                                <span class="label-text">Plutôt oui</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="reponse_attentes" id="reponse_attentes-4" value="4">
+                                <label for="reponse_attentes-4">4</label>
+                                <span class="label-text">Tout à fait</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-6">
+                        <button type="button" class="px-6 py-2 bg-gray-200 text-gray-700 oblong font-medium" onclick="prevSection(4, 3)">Précédent</button>
+                        <button type="button" class="btn-primary px-6 py-2 font-medium" onclick="nextSection(4, 5)">Suivant</button>
+                    </div>
+                </div>
+                
+                <div class="section" id="section-5">
+                    <h2 class="text-xl font-semibold mb-4 text-[#036093]">Évaluation finale</h2>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Je pense avoir compris et acquis les objectifs prévus lors de ma formation</label>
+                        <div class="rating-scale">
+                            <div class="rating-scale-item">
+                                <input type="radio" name="acquisition_objectifs" id="acquisition_objectifs-1" value="1" required>
+                                <label for="acquisition_objectifs-1">1</label>
+                                <span class="label-text">Pas du tout</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="acquisition_objectifs" id="acquisition_objectifs-2" value="2">
+                                <label for="acquisition_objectifs-2">2</label>
+                                <span class="label-text">Plutôt non</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="acquisition_objectifs" id="acquisition_objectifs-3" value="3">
+                                <label for="acquisition_objectifs-3">3</label>
+                                <span class="label-text">Plutôt oui</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="acquisition_objectifs" id="acquisition_objectifs-4" value="4">
+                                <label for="acquisition_objectifs-4">4</label>
+                                <span class="label-text">Tout à fait</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">La formation correspond au métier ou aux réalités du secteur</label>
+                        <div class="rating-scale">
+                            <div class="rating-scale-item">
+                                <input type="radio" name="correspondance_metier" id="correspondance_metier-1" value="1" required>
+                                <label for="correspondance_metier-1">1</label>
+                                <span class="label-text">Pas du tout</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="correspondance_metier" id="correspondance_metier-2" value="2">
+                                <label for="correspondance_metier-2">2</label>
+                                <span class="label-text">Plutôt non</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="correspondance_metier" id="correspondance_metier-3" value="3">
+                                <label for="correspondance_metier-3">3</label>
+                                <span class="label-text">Plutôt oui</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="correspondance_metier" id="correspondance_metier-4" value="4">
+                                <label for="correspondance_metier-4">4</label>
+                                <span class="label-text">Tout à fait</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Recommanderiez-vous la formation à une personne du même métier ?</label>
+                        <div class="rating-scale">
+                            <div class="rating-scale-item">
+                                <input type="radio" name="recommandation" id="recommandation-1" value="1" required>
+                                <label for="recommandation-1">1</label>
+                                <span class="label-text">Pas du tout</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="recommandation" id="recommandation-2" value="2">
+                                <label for="recommandation-2">2</label>
+                                <span class="label-text">Plutôt non</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="recommandation" id="recommandation-3" value="3">
+                                <label for="recommandation-3">3</label>
+                                <span class="label-text">Plutôt oui</span>
+                            </div>
+                            <div class="rating-scale-item">
+                                <input type="radio" name="recommandation" id="recommandation-4" value="4">
+                                <label for="recommandation-4">4</label>
+                                <span class="label-text">Tout à fait</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Cette formation est : (plusieurs réponses possibles)</label>
+                        <div class="grid grid-cols-1 gap-2">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="formation_prevue" name="type_formation[]" value="prevue_entreprise" class="mr-2">
+                                <label for="formation_prevue">Formation prévue par votre entreprise</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="renforcer_competences" name="type_formation[]" value="renforcer_competences" class="mr-2">
+                                <label for="renforcer_competences">Utile pour renforcer vos compétences</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="nouvelles_competences" name="type_formation[]" value="nouvelles_competences" class="mr-2">
+                                <label for="nouvelles_competences">Utile pour acquérir de nouvelles compétences</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="evolution_professionnelle" name="type_formation[]" value="evolution_professionnelle" class="mr-2">
+                                <label for="evolution_professionnelle">Utile pour votre évolution professionnelle</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="autre_type" name="type_formation[]" value="autre" class="mr-2">
+                                <label for="autre_type">Autre</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="commentaire" class="block text-gray-700 mb-2">Commentaire</label>
+                        <textarea id="commentaire" name="commentaire" rows="4" class="w-full border-2 border-gray-200 rounded-3xl p-4 focus:border-[#50b8ff] focus:outline-none transition"></textarea>
+                    </div>
+                    
+                    <div class="flex justify-between mt-6">
+                        <button type="button" class="px-6 py-2 bg-gray-200 text-gray-700 oblong font-medium" onclick="prevSection(5, 4)">Précédent</button>
+                        <button type="submit" class="btn-primary px-6 py-2 font-medium">Soumettre</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="text-center text-sm text-gray-500">
+            <p>© 2023 - Tous droits réservés</p>
+        </div>
+    </div>
+
+    <script>
+        // Gestion de la progression du formulaire
+        const sections = ['section-1', 'section-2', 'section-3', 'section-4', 'section-5'];
+        const progressBar = document.getElementById('progress-bar');
+        
+        function nextSection(current, next) {
+            // Validation basique
+            const currentSection = document.getElementById(`section-${current}`);
+            const inputs = currentSection.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (input.type === 'radio') {
+                    const name = input.name;
+                    const radioGroup = currentSection.querySelectorAll(`input[name="${name}"]:checked`);
+                    if (radioGroup.length === 0) {
+                        isValid = false;
+                        const radioLabels = currentSection.querySelectorAll(`label[for^="${name}"]`);
+                        // Highlight parent question label or radio labels themselves
+                        let questionLabel = currentSection.querySelector(`label[for^="${name.split('-')[0]}"]`);
+                        if(input.closest('.question-container')){
+                             questionLabel = input.closest('.question-container').querySelector('label.block');
+                        }
+                        if(questionLabel) questionLabel.classList.add('text-red-500');
+
+                        // Fallback to highlighting individual radio labels if a general question label isn't easily found
+                        if (!questionLabel || radioLabels.length > 0) {
+                            radioLabels.forEach(label => label.classList.add('text-red-500'));
+                        }
+
+
+                    } else {
+                        let questionLabel = currentSection.querySelector(`label[for^="${name.split('-')[0]}"]`);
+                         if(input.closest('.question-container')){
+                             questionLabel = input.closest('.question-container').querySelector('label.block');
+                        }
+                        if(questionLabel) questionLabel.classList.remove('text-red-500');
+                        
+                        const radioLabels = currentSection.querySelectorAll(`label[for^="${name}"]`);
+                        radioLabels.forEach(label => label.classList.remove('text-red-500'));
+                    }
+                } else if (!input.value) {
+                    isValid = false;
+                    input.classList.add('border-red-500');
+                    // Highlight the main label for the input field
+                    const labelForInput = currentSection.querySelector(`label[for="${input.id}"]`);
+                    if (labelForInput) {
+                        labelForInput.classList.add('text-red-500');
+                    }
+                } else {
+                    input.classList.remove('border-red-500');
+                    const labelForInput = currentSection.querySelector(`label[for="${input.id}"]`);
+                    if (labelForInput) {
+                        labelForInput.classList.remove('text-red-500');
+                    }
+                }
+            });
+            
+            if (!isValid) {
+                alert('Veuillez remplir tous les champs obligatoires.');
+                return;
+            }
+            
+            document.getElementById(`section-${current}`).classList.remove('active');
+            document.getElementById(`section-${next}`).classList.add('active');
+            
+            const progress = (next / sections.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        function prevSection(current, prev) {
+            document.getElementById(`section-${current}`).classList.remove('active');
+            document.getElementById(`section-${prev}`).classList.add('active');
+            
+            const progress = (prev / sections.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        // La gestion de la soumission AJAX et du message de remerciement personnalisé a été supprimée.
+        // Le formulaire sera soumis de manière standard à l'action spécifiée (Formsubmit.co).
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94344b8764a404aa',t:'MTc0NzgzMjgyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>
